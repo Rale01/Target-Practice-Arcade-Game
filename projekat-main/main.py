@@ -11,6 +11,9 @@ big_font = pygame.font.Font('projekat-main/assets/font/myFont.ttf', 60)
 WIDTH = 900
 HEIGHT = 800
 screen = pygame.display.set_mode([WIDTH, HEIGHT])
+pygame.display.set_caption("TARGET PRACTICE")
+icon = pygame.image.load("projekat-main/assets/icon/icon.png")
+pygame.display.set_icon(icon)
 bgs = []
 banners = []
 guns = []

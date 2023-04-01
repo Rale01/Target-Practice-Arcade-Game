@@ -23,7 +23,7 @@ targets = {
 
 
 
-level = 3
+level = 1
 points = 0
 shot = False
 total_shots = 0
@@ -183,6 +183,11 @@ while run:
                 total_shots += 1
                 if mode == 1:
                     ammo -= 1
-        
+
+    if level > 0:
+        if target_boxes == [[], [], []] and level < 3:
+            level += 1
+
+
     pygame.display.flip()
 pygame.quit()

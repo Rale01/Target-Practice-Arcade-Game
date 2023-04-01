@@ -60,7 +60,15 @@ file.close()
 best_freeplay = int(read_file[0])
 best_ammo = int(read_file[1])
 best_timed = int(read_file[2])
-
+pygame.mixer.init()
+pygame.mixer.music.load('projekat-main/assets/sounds/bg_music.mp3')
+plate_sound = pygame.mixer.Sound('projekat-main/assets/sounds/Broken plates.wav')
+plate_sound.set_volume(.2)
+bird_sound = pygame.mixer.Sound('projekat-main/assets/sounds/Drill Gear.mp3')
+bird_sound.set_volume(.2)
+laser_sound = pygame.mixer.Sound('projekat-main/assets/sounds/Laser Gun.wav')
+laser_sound.set_volume(.3)
+pygame.mixer.music.play()
 
 
 def draw_score():
@@ -140,6 +148,12 @@ def check_shot(targets, coords):
             if targets[i][j].collidepoint(mouse_pos):
                 coords[i].pop(j)
                 points += 10 + 10 * (i ** 2)
+                if level == 1:
+                    bird_sound.play()
+                elif level == 2:
+                    plate_sound.play()
+                elif level == 3:
+                    laser_sound.play()
     return coords
 
 
@@ -234,7 +248,7 @@ def draw_pause():
         pause = False
         clicked = True
     if menu_button.collidepoint(mouse_pos) and clicks[0] and not clicked:
-        
+        pygame.mixer.music.play()
         level = 0
         pause = False
         menu = True
@@ -328,7 +342,7 @@ while run:
                 clicked = True
             if (670 < mouse_position[0] < 860) and (715 < mouse_position[1] < 760):
                 menu = True
-                
+                pygame.mixer.music.play()
                 clicked = True
                 new_coords = True
         if event.type == pygame.MOUSEBUTTONUP and event.button == 1 and clicked:
@@ -340,7 +354,7 @@ while run:
         if (level == 3 and target_boxes == [[], [], [], []]) or (mode == 1 and ammo == 0) or (
                 mode == 2 and time_remaining == 0):
             new_coords = True
-            
+            pygame.mixer.music.play()
             if mode == 0:
                 if time_passed < best_freeplay or best_freeplay == 0:
                     best_freeplay = time_passed

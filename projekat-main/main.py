@@ -2,59 +2,50 @@
 import pygame
 import math
 
-#bazicna podesavanja ekrana, fps-a, tajmera i nizova objekata u nasoj igri
+
+#projekat-main/
+
+
 pygame.init()
 fps = 60
 timer = pygame.time.Clock()
 font = pygame.font.Font('projekat-main/assets/font/myFont.ttf', 32)
+big_font = pygame.font.Font('projekat-main/assets/font/myFont.ttf', 60)
 WIDTH = 900
 HEIGHT = 800
 screen = pygame.display.set_mode([WIDTH, HEIGHT])
 bgs = []
 banners = []
 guns = []
-#slike neprijatelja i recnik za broj neprijatelja po velicini
 target_images = [[], [], []]
-targets = {
-    1: [10, 5, 3], 
-    2: [12, 8, 5],
-    3: [15, 12, 8, 3]
-    }
-
-
-
+targets = {1: [10, 5, 3],
+           2: [12, 8, 5],
+           3: [15, 12, 8, 3]}
 level = 0
 points = 0
-shot = False
 total_shots = 0
 # 0 = freeplay, 1 - accuracy, 2 - timed
 mode = 0
 ammo = 0
-
 time_passed = 0
 time_remaining = 0
-
 counter = 1
-
-
-menu = True
-game_over = False
-pause = False
-
-
-menu_img = pygame.image.load(f'projekat-main/assets/menus/mainMenu.png')
-game_over_img = pygame.image.load(f'projekat-main/assets/menus/gameOver.png')
-pause_img = pygame.image.load(f'projekat-main/assets/menus/pause.png')
-
-
-
-
-
 best_freeplay = 0
 best_ammo = 0
 best_timed = 0
-#METODE ZA UCITAVANJE OBJEKATA U IGRICI
-#ucitavanje pozadina, banera i pistolja
+shot = False
+menu = True
+game_over = False
+pause = False
+clicked = False
+write_values = False
+new_coords = True
+one_coords = [[], [], []]
+two_coords = [[], [], []]
+three_coords = [[], [], [], []]
+menu_img = pygame.image.load(f'projekat-main/assets/menus/mainMenu.png')
+game_over_img = pygame.image.load(f'projekat-main/assets/menus/gameOver.png')
+pause_img = pygame.image.load(f'projekat-main/assets/menus/pause.png')
 for i in range(1, 4):
     bgs.append(pygame.image.load(f'projekat-main/assets/bgs/{i}.png'))
     banners.append(pygame.image.load(f'projekat-main/assets/banners/{i}.png'))
@@ -68,12 +59,32 @@ for i in range(1, 4):
             target_images[i - 1].append(pygame.transform.scale(
                 pygame.image.load(f'projekat-main/assets/targets/{i}/{j}.png'), (120 - (j * 18), 80 - (j * 12))))
 
-#metoda za pistolj i rotaciju njegovu
+best_freeplay = 0
+best_ammo = 0
+best_timed = 0
+
+
+
+def draw_score():
+    points_text = font.render(f'Points: {points}', True, 'black')
+    screen.blit(points_text, (320, 660))
+    shots_text = font.render(f'Total Shots: {total_shots}', True, 'black')
+    screen.blit(shots_text, (320, 687))
+    time_text = font.render(f'Time Elapsed: {time_passed}', True, 'black')
+    screen.blit(time_text, (320, 714))
+    if mode == 0:
+        mode_text = font.render(f'Freeplay!', True, 'black')
+    if mode == 1:
+        mode_text = font.render(f'Ammo Remaining: {ammo}', True, 'black')
+    if mode == 2:
+        mode_text = font.render(f'Time Remaining {time_remaining}', True, 'black')
+    screen.blit(mode_text, (320, 741))
+
+
 def draw_gun():
     mouse_pos = pygame.mouse.get_pos()
     gun_point = (WIDTH / 2, HEIGHT - 200)
-    #boja kursora
-    lasers = ['red', 'green', 'orange']
+    lasers = ['red', 'purple', 'green']
     clicks = pygame.mouse.get_pressed()
     if mouse_pos[0] != gun_point[0]:
         slope = (mouse_pos[1] - gun_point[1]) / (mouse_pos[0] - gun_point[0])
@@ -94,7 +105,7 @@ def draw_gun():
             if clicks[0]:
                 pygame.draw.circle(screen, lasers[level - 1], mouse_pos, 5)
 
-#metoda za pomeranje neprijatelja
+
 def move_level(coords):
     if level == 1 or level == 2:
         max_val = 3
@@ -110,14 +121,6 @@ def move_level(coords):
     return coords
 
 
-
-
-
-
-
-
-
-#odredjivanje broja neprijatelja
 def draw_level(coords):
     if level == 1 or level == 2:
         target_rects = [[], [], []]
@@ -131,8 +134,6 @@ def draw_level(coords):
     return target_rects
 
 
-
-#proverava jel neprijatelj upucan
 def check_shot(targets, coords):
     global points
     mouse_pos = pygame.mouse.get_pos()
@@ -141,25 +142,8 @@ def check_shot(targets, coords):
             if targets[i][j].collidepoint(mouse_pos):
                 coords[i].pop(j)
                 points += 10 + 10 * (i ** 2)
+                
     return coords
-
-
-def draw_score():
-    points_text = font.render(f'Points: {points}', True, 'black')
-    screen.blit(points_text, (320, 660))
-    shots_text = font.render(f'Total Shots: {total_shots}', True, 'black')
-    screen.blit(shots_text, (320, 687))
-    time_text = font.render(f'Time Elapsed: {time_passed}', True, 'black')
-    screen.blit(time_text, (320, 714))
-    if mode == 0:
-        mode_text = font.render(f'Freeplay!', True, 'black')
-    if mode == 1:
-        mode_text = font.render(f'Ammo Remaining: {ammo}', True, 'black')
-    if mode == 2:
-        mode_text = font.render(f'Time Remaining {time_remaining}', True, 'black')
-    screen.blit(mode_text, (320, 741))
-
-
 
 
 def draw_menu():
@@ -253,7 +237,7 @@ def draw_pause():
         pause = False
         clicked = True
     if menu_button.collidepoint(mouse_pos) and clicks[0] and not clicked:
-        pygame.mixer.music.play()
+        
         level = 0
         pause = False
         menu = True
@@ -265,28 +249,6 @@ def draw_pause():
         new_coords = True
 
 
-
-
-#inicijalizacija koordinata neprijatelja
-one_coords = [[], [], []]
-two_coords = [[], [], []]
-three_coords = [[], [], [], []]
-for i in range(3):
-    my_list = targets[1]
-    for j in range(my_list[i]):
-        one_coords[i].append((WIDTH // (my_list[i]) * j, 300 - (i * 150) + 30 * (j % 2)))
-for i in range(3):
-    my_list = targets[2]
-    for j in range(my_list[i]):
-        two_coords[i].append((WIDTH // (my_list[i]) * j, 300 - (i * 150) + 30 * (j % 2)))
-for i in range(4):
-    my_list = targets[3]
-    for j in range(my_list[i]):
-        three_coords[i].append((WIDTH // (my_list[i]) * j, 300 - (i * 100) + 30 * (j % 2)))
-
-
-
-#pocetna verzija ekrana
 run = True
 while run:
     timer.tick(fps)
@@ -299,10 +261,28 @@ while run:
             if mode == 2:
                 time_remaining -= 1
 
-    screen.fill('black')
-    screen.blit(bgs[level-1], (0,0))
-    screen.blit(banners[level-1], (0,HEIGHT - 200))
+    if new_coords:
+        # initialize enemy coordinates
+        one_coords = [[], [], []]
+        two_coords = [[], [], []]
+        three_coords = [[], [], [], []]
+        for i in range(3):
+            my_list = targets[1]
+            for j in range(my_list[i]):
+                one_coords[i].append((WIDTH // (my_list[i]) * j, 300 - (i * 150) + 30 * (j % 2)))
+        for i in range(3):
+            my_list = targets[2]
+            for j in range(my_list[i]):
+                two_coords[i].append((WIDTH // (my_list[i]) * j, 300 - (i * 150) + 30 * (j % 2)))
+        for i in range(4):
+            my_list = targets[3]
+            for j in range(my_list[i]):
+                three_coords[i].append((WIDTH // (my_list[i]) * j, 300 - (i * 100) + 30 * (j % 2)))
+        new_coords = False
 
+    screen.fill('black')
+    screen.blit(bgs[level - 1], (0, 0))
+    screen.blit(banners[level - 1], (0, HEIGHT - 200))
     if menu:
         level = 0
         draw_menu()
@@ -312,7 +292,6 @@ while run:
     if pause:
         level = 0
         draw_pause()
-
 
     if level == 1:
         target_boxes = draw_level(one_coords)
@@ -332,12 +311,10 @@ while run:
         if shot:
             three_coords = check_shot(target_boxes, three_coords)
             shot = False
-
-    if level > 0 :
+    if level > 0:
         draw_gun()
         draw_score()
 
-    #ako smo kliknuli X i zatvorili prozor prekida se igrica
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
@@ -359,11 +336,24 @@ while run:
         if event.type == pygame.MOUSEBUTTONUP and event.button == 1 and clicked:
             clicked = False
 
-
     if level > 0:
         if target_boxes == [[], [], []] and level < 3:
             level += 1
-
-
+        if (level == 3 and target_boxes == [[], [], [], []]) or (mode == 1 and ammo == 0) or (
+                mode == 2 and time_remaining == 0):
+            new_coords = True
+            if mode == 0:
+                if time_passed < best_freeplay or best_freeplay == 0:
+                    best_freeplay = time_passed
+                    write_values = True
+            if mode == 1:
+                if points > best_ammo:
+                    best_ammo = points
+                    write_values = True
+            if mode == 2:
+                if points > best_timed:
+                    best_timed = points
+                    write_values = True
+            game_over = True
     pygame.display.flip()
 pygame.quit()

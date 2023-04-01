@@ -66,6 +66,30 @@ def draw_gun():
             if clicks[0]:
                 pygame.draw.circle(screen, lasers[level - 1], mouse_pos, 5)
 
+#metoda za pomeranje neprijatelja
+def move_level(coords):
+    if level == 1 or level == 2:
+        max_val = 3
+    else:
+        max_val = 4
+    for i in range(max_val):
+        for j in range(len(coords[i])):
+            my_coords = coords[i][j]
+            if my_coords[0] < -150:
+                coords[i][j] = (WIDTH, my_coords[1])
+            else:
+                coords[i][j] = (my_coords[0] - 2 ** i, my_coords[1])
+    return coords
+
+
+
+
+
+
+
+
+
+#odredjivanje broja neprijatelja
 def draw_level(coords):
     if level == 1 or level == 2:
         target_rects = [[], [], []]
@@ -111,10 +135,13 @@ while run:
     screen.blit(banners[level-1], (0,HEIGHT - 200))
     if level == 1:
         target_boxes = draw_level(one_coords)
+        one_coords = move_level(one_coords)
     elif level == 2:
         target_boxes = draw_level(two_coords)
+        two_coords = move_level(two_coords)
     elif level == 3:
         target_boxes = draw_level(three_coords)
+        three_coords = move_level(three_coords)
 
     if level > 0 :
         draw_gun()

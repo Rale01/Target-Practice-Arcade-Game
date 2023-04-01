@@ -5,7 +5,8 @@ import math
 pygame.init()
 fps = 60
 timer = pygame.time.Clock()
-font = pygame.font.Font('projekat-main/assets/font/myFont.ttf', 32)
+font = pygame.font.Font('projekat-main/assets/font/myFont.ttf', 20)
+score_font = pygame.font.Font('projekat-main/assets/font/myFont.ttf', 30)
 big_font = pygame.font.Font('projekat-main/assets/font/myFont.ttf', 60)
 WIDTH = 900
 HEIGHT = 800
@@ -62,28 +63,28 @@ best_ammo = int(read_file[1])
 best_timed = int(read_file[2])
 pygame.mixer.init()
 pygame.mixer.music.load('projekat-main/assets/sounds/bg_music.mp3')
-plate_sound = pygame.mixer.Sound('projekat-main/assets/sounds/Broken plates.wav')
-plate_sound.set_volume(.2)
+fish_sound = pygame.mixer.Sound('projekat-main/assets/sounds/Dying fish.wav')
+fish_sound.set_volume(.8)
 bird_sound = pygame.mixer.Sound('projekat-main/assets/sounds/Drill Gear.mp3')
-bird_sound.set_volume(.2)
+bird_sound.set_volume(.5)
 laser_sound = pygame.mixer.Sound('projekat-main/assets/sounds/Laser Gun.wav')
-laser_sound.set_volume(.3)
+laser_sound.set_volume(.5)
 pygame.mixer.music.play()
 
 
 def draw_score():
-    points_text = font.render(f'Points: {points}', True, 'black')
+    points_text = font.render(f'Points: {points}', True, 'white')
     screen.blit(points_text, (320, 660))
-    shots_text = font.render(f'Total Shots: {total_shots}', True, 'black')
+    shots_text = font.render(f'Total Shots: {total_shots}', True, 'white')
     screen.blit(shots_text, (320, 687))
-    time_text = font.render(f'Time Elapsed: {time_passed}', True, 'black')
+    time_text = font.render(f'Time Elapsed: {time_passed}', True, 'white')
     screen.blit(time_text, (320, 714))
     if mode == 0:
-        mode_text = font.render(f'Freeplay!', True, 'black')
+        mode_text = font.render(f'Freeplay!', True, 'white')
     if mode == 1:
-        mode_text = font.render(f'Ammo Remaining: {ammo}', True, 'black')
+        mode_text = font.render(f'Ammo Remaining: {ammo}', True, 'white')
     if mode == 2:
-        mode_text = font.render(f'Time Remaining {time_remaining}', True, 'black')
+        mode_text = font.render(f'Time Remaining {time_remaining}', True, 'white')
     screen.blit(mode_text, (320, 741))
 
 
@@ -151,7 +152,7 @@ def check_shot(targets, coords):
                 if level == 1:
                     bird_sound.play()
                 elif level == 2:
-                    plate_sound.play()
+                    fish_sound.play()
                 elif level == 3:
                     laser_sound.play()
     return coords
@@ -166,11 +167,11 @@ def draw_menu():
     mouse_pos = pygame.mouse.get_pos()
     clicks = pygame.mouse.get_pressed()
     freeplay_button = pygame.rect.Rect((170, 524), (260, 100))
-    screen.blit(font.render(f'{best_freeplay}', True, 'black'), (340, 580))
+    screen.blit(score_font.render(f'{best_freeplay}', True, 'white'), (320, 565))
     ammo_button = pygame.rect.Rect((475, 524), (260, 100))
-    screen.blit(font.render(f'{best_ammo}', True, 'black'), (650, 580))
+    screen.blit(score_font.render(f'{best_ammo}', True, 'white'), (650, 565))
     timed_button = pygame.rect.Rect((170, 661), (260, 100))
-    screen.blit(font.render(f'{best_timed}', True, 'black'), (350, 710))
+    screen.blit(score_font.render(f'{best_timed}', True, 'white'), (340, 713))
     reset_button = pygame.rect.Rect((475, 661), (260, 100))
     if freeplay_button.collidepoint(mouse_pos) and clicks[0] and not clicked:
         mode = 0
@@ -220,7 +221,7 @@ def draw_game_over():
     clicks = pygame.mouse.get_pressed()
     exit_button = pygame.rect.Rect((170, 661), (260, 100))
     menu_button = pygame.rect.Rect((475, 661), (260, 100))
-    screen.blit(big_font.render(f'{display_score}', True, 'black'), (650, 570))
+    screen.blit(big_font.render(f'{display_score}', True, 'white'), (640, 560))
     if menu_button.collidepoint(mouse_pos) and clicks[0] and not clicked:
         clicked = True
         level = 0

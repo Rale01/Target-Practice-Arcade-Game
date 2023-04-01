@@ -1,10 +1,6 @@
-#paketi koje cemo koristiti
+# Python Arcade Shooting Gallery!
 import pygame
 import math
-
-
-#projekat-main/
-
 
 pygame.init()
 fps = 60
@@ -58,10 +54,12 @@ for i in range(1, 4):
         for j in range(1, 5):
             target_images[i - 1].append(pygame.transform.scale(
                 pygame.image.load(f'projekat-main/assets/targets/{i}/{j}.png'), (120 - (j * 18), 80 - (j * 12))))
-
-best_freeplay = 0
-best_ammo = 0
-best_timed = 0
+file = open('projekat-main/high_scores.txt', 'r')
+read_file = file.readlines()
+file.close()
+best_freeplay = int(read_file[0])
+best_ammo = int(read_file[1])
+best_timed = int(read_file[2])
 
 
 
@@ -142,7 +140,6 @@ def check_shot(targets, coords):
             if targets[i][j].collidepoint(mouse_pos):
                 coords[i].pop(j)
                 points += 10 + 10 * (i ** 2)
-                
     return coords
 
 
@@ -331,6 +328,7 @@ while run:
                 clicked = True
             if (670 < mouse_position[0] < 860) and (715 < mouse_position[1] < 760):
                 menu = True
+                
                 clicked = True
                 new_coords = True
         if event.type == pygame.MOUSEBUTTONUP and event.button == 1 and clicked:
@@ -342,6 +340,7 @@ while run:
         if (level == 3 and target_boxes == [[], [], [], []]) or (mode == 1 and ammo == 0) or (
                 mode == 2 and time_remaining == 0):
             new_coords = True
+            
             if mode == 0:
                 if time_passed < best_freeplay or best_freeplay == 0:
                     best_freeplay = time_passed
@@ -355,5 +354,10 @@ while run:
                     best_timed = points
                     write_values = True
             game_over = True
+    if write_values:
+        file = open('projekat-main/high_scores.txt', 'w')
+        file.write(f'{best_freeplay}\n{best_ammo}\n{best_timed}')
+        file.close()
+        write_values = False
     pygame.display.flip()
 pygame.quit()

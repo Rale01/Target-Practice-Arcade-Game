@@ -23,7 +23,7 @@ targets = {
 
 
 
-level = 1
+level = 0
 points = 0
 shot = False
 total_shots = 0
@@ -36,6 +36,23 @@ time_remaining = 0
 
 counter = 1
 
+
+menu = True
+game_over = False
+pause = False
+
+
+menu_img = pygame.image.load(f'projekat-main/assets/menus/mainMenu.png')
+game_over_img = pygame.image.load(f'projekat-main/assets/menus/gameOver.png')
+pause_img = pygame.image.load(f'projekat-main/assets/menus/pause.png')
+
+
+
+
+
+best_freeplay = 0
+best_ammo = 0
+best_timed = 0
 #METODE ZA UCITAVANJE OBJEKATA U IGRICI
 #ucitavanje pozadina, banera i pistolja
 for i in range(1, 4):
@@ -143,6 +160,113 @@ def draw_score():
     screen.blit(mode_text, (320, 741))
 
 
+
+
+def draw_menu():
+    global game_over, pause, mode, level, menu, time_passed, total_shots, points, ammo
+    global time_remaining, best_freeplay, best_ammo, best_timed, write_values, clicked, new_coords
+    game_over = False
+    pause = False
+    screen.blit(menu_img, (0, 0))
+    mouse_pos = pygame.mouse.get_pos()
+    clicks = pygame.mouse.get_pressed()
+    freeplay_button = pygame.rect.Rect((170, 524), (260, 100))
+    screen.blit(font.render(f'{best_freeplay}', True, 'black'), (340, 580))
+    ammo_button = pygame.rect.Rect((475, 524), (260, 100))
+    screen.blit(font.render(f'{best_ammo}', True, 'black'), (650, 580))
+    timed_button = pygame.rect.Rect((170, 661), (260, 100))
+    screen.blit(font.render(f'{best_timed}', True, 'black'), (350, 710))
+    reset_button = pygame.rect.Rect((475, 661), (260, 100))
+    if freeplay_button.collidepoint(mouse_pos) and clicks[0] and not clicked:
+        mode = 0
+        level = 1
+        menu = False
+        time_passed = 0
+        total_shots = 0
+        points = 0
+        clicked = True
+        new_coords = True
+    if ammo_button.collidepoint(mouse_pos) and clicks[0] and not clicked:
+        mode = 1
+        level = 1
+        menu = False
+        time_passed = 0
+        ammo = 81
+        total_shots = 0
+        points = 0
+        clicked = True
+        new_coords = True
+    if timed_button.collidepoint(mouse_pos) and clicks[0] and not clicked:
+        mode = 2
+        level = 1
+        menu = False
+        time_remaining = 30
+        time_passed = 0
+        total_shots = 0
+        points = 0
+        clicked = True
+        new_coords = True
+    if reset_button.collidepoint(mouse_pos) and clicks[0] and not clicked:
+        best_freeplay = 0
+        best_ammo = 0
+        best_timed = 0
+        clicked = True
+        write_values = True
+
+
+def draw_game_over():
+    global clicked, level, pause, game_over, menu, points, total_shots, time_passed, time_remaining
+    if mode == 0:
+        display_score = time_passed
+    else:
+        display_score = points
+    screen.blit(game_over_img, (0, 0))
+    mouse_pos = pygame.mouse.get_pos()
+    clicks = pygame.mouse.get_pressed()
+    exit_button = pygame.rect.Rect((170, 661), (260, 100))
+    menu_button = pygame.rect.Rect((475, 661), (260, 100))
+    screen.blit(big_font.render(f'{display_score}', True, 'black'), (650, 570))
+    if menu_button.collidepoint(mouse_pos) and clicks[0] and not clicked:
+        clicked = True
+        level = 0
+        pause = False
+        game_over = False
+        menu = True
+        points = 0
+        total_shots = 0
+        time_passed = 0
+        time_remaining = 0
+    if exit_button.collidepoint(mouse_pos) and clicks[0] and not clicked:
+        global run
+        run = False
+
+
+def draw_pause():
+    global level, pause, menu, points, total_shots, time_passed, time_remaining, clicked, new_coords
+    screen.blit(pause_img, (0, 0))
+    mouse_pos = pygame.mouse.get_pos()
+    clicks = pygame.mouse.get_pressed()
+    resume_button = pygame.rect.Rect((170, 661), (260, 100))
+    menu_button = pygame.rect.Rect((475, 661), (260, 100))
+    if resume_button.collidepoint(mouse_pos) and clicks[0] and not clicked:
+        level = resume_level
+        pause = False
+        clicked = True
+    if menu_button.collidepoint(mouse_pos) and clicks[0] and not clicked:
+        pygame.mixer.music.play()
+        level = 0
+        pause = False
+        menu = True
+        points = 0
+        total_shots = 0
+        time_passed = 0
+        time_remaining = 0
+        clicked = True
+        new_coords = True
+
+
+
+
 #inicijalizacija koordinata neprijatelja
 one_coords = [[], [], []]
 two_coords = [[], [], []]
@@ -178,6 +302,18 @@ while run:
     screen.fill('black')
     screen.blit(bgs[level-1], (0,0))
     screen.blit(banners[level-1], (0,HEIGHT - 200))
+
+    if menu:
+        level = 0
+        draw_menu()
+    if game_over:
+        level = 0
+        draw_game_over()
+    if pause:
+        level = 0
+        draw_pause()
+
+
     if level == 1:
         target_boxes = draw_level(one_coords)
         one_coords = move_level(one_coords)
@@ -212,6 +348,17 @@ while run:
                 total_shots += 1
                 if mode == 1:
                     ammo -= 1
+            if (670 < mouse_position[0] < 860) and (660 < mouse_position[1] < 715):
+                resume_level = level
+                pause = True
+                clicked = True
+            if (670 < mouse_position[0] < 860) and (715 < mouse_position[1] < 760):
+                menu = True
+                clicked = True
+                new_coords = True
+        if event.type == pygame.MOUSEBUTTONUP and event.button == 1 and clicked:
+            clicked = False
+
 
     if level > 0:
         if target_boxes == [[], [], []] and level < 3:

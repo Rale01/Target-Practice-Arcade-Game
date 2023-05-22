@@ -178,8 +178,9 @@ pygame.mixer.music.play()
 #FUNKCIJA ZA AZURIRANJE INFORMACIJA O REZULTATIMA I STANJU IGRE NA EKRANU TOKOM IGRANJA
 def draw_score():
     #koristi font za renderovanje teksta koji prikazuje broj osvojenih poena. 
-    # Tekst se formira u obliku "Points: {points}" gde se {points} zamenjuje s
-    # tvarnom vrednošću broja poena. Boja teksta je bela.
+    # Tekst se formira u obliku "Points: {points}" gde se {points} zamenjuje 
+    # stvarnom vrednošću broja poena. Boja teksta je bela.
+    # TEKST U BANERU NA NIVOIMA
     points_text = font.render(f'Points: {points}', True, 'white')
     #iscrtava tekst na ekranu na poziciji (320, 660).
     screen.blit(points_text, (320, 660))
@@ -241,7 +242,7 @@ def draw_gun():
             if clicks[0]:
                 pygame.draw.circle(screen, lasers[level - 1], mouse_pos, 5)
     #Ako je pozicija miša desno od polovine širine ekrana, 
-    #iscrtava se neraspložena slika oružja gun na odgovarajućoj poziciji. 
+    #iscrtava se nerotirana slika oružja gun na odgovarajućoj poziciji. 
     #Ako je pritisnut levi taster miša (clicks[0]), iscrtava se kružnica lasera na poziciji miša.
     else:
         gun = guns[level - 1]
@@ -252,7 +253,7 @@ def draw_gun():
 
 
 
-#FUNKCIJA ZA POMERANJE META U IGRI SA LEVE NA DESNU STRANU
+#FUNKCIJA ZA POMERANJE META U IGRI SA DESNE NA LEVU STRANU
 def move_level(coords):
     #Prvo se proverava vrednost promenljive level 
     #da bi se odredio maksimalni broj meta na tom nivou. 
@@ -284,7 +285,7 @@ def move_level(coords):
 
 
 #FUNKCIJA ZA ISCRTAVANJE META NA EKRANU I DOBIJANJE 
-#PRAVOUGAONIKA KOJI IH OGRANIČAVAJU. PRAVOUGAONICI SE KORISTE ZA 
+#KVADRATA KOJI IH OGRANIČAVAJU. PRAVOUGAONICI SE KORISTE ZA 
 #DETEKCIJU SUDARA I INTERAKCIJU SA METAMA TOKOM IGRE.
 def draw_level(coords):
     #Prvo se proverava vrednost promenljive level 
@@ -298,22 +299,22 @@ def draw_level(coords):
     #Zatim se prolazi kroz sve koordinate meta u listi coords
     for i in range(len(coords)):
         for j in range(len(coords[i])):
-            #Kreira se pravougaonik target_rect za svaku koordinatu. 
-            #Koordinate pravougaonika se formiraju na osnovu koordinata mete 
+            #Kreira se KVADRAT target_rect za svaku koordinatu. 
+            #Koordinate kvadrata se formiraju na osnovu koordinata mete 
             #tako da se pomera za 20 po x-osi i ostaje na istoj poziciji po y-osi, 
-            #dok se dimenzije pravougaonika smanjuju kako se ide na viši nivo (60 - i * 12).
+            #dok se dimenzije kvadrata smanjuju kako se ide na viši nivo (60 - i * 12).
             target_rects[i].append(pygame.rect.Rect((coords[i][j][0] + 20, coords[i][j][1]),
                                                     (60 - i * 12, 60 - i * 12)))
             #Iscrtavaju se slike meta target_images[level - 1][i] na 
             #odgovarajućim koordinatama coords[i][j] na ekranu.
             screen.blit(target_images[level - 1][i], coords[i][j])
-    #Na kraju, funkcija vraća listu pravougaonika target_rects koji predstavljaju okvire oko svake mete.
+    #Na kraju, funkcija vraća listu kvadrata target_rects koji predstavljaju okvire oko svake mete.
     return target_rects
 
 
 
 #FUNKCIJA ZA PROVERU DA LI JE META POGODJENA KLIKOM MIŠA I ZA AŽURIRANJE REZULTATA IGRE
-#prima listu pravougaonika koje predstavljaju mete targets i listu koordinata meta coords kao argumente
+#prima listu kvadrata koje predstavljaju mete targets i listu koordinata meta coords kao argumente
 def check_shot(targets, coords):
     #globalna promenljiva points kako bi se omogućilo ažuriranje broja poena tokom funkcije.
     global points
@@ -321,10 +322,10 @@ def check_shot(targets, coords):
     mouse_pos = pygame.mouse.get_pos()
     #Zatim se prolazi kroz sve mete u listi targets:
     for i in range(len(targets)):
-        #Unutar petlje se prolazi kroz sve pravougaonike mete targets[i][j]
+        #Unutar petlje se prolazi kroz sve kvadrate mete targets[i][j]
         for j in range(len(targets[i])):
-            #Za svaki pravougaonik se proverava da li je pozicija miša 
-            #unutar tog pravougaonika pomoću funkcije collidepoint(mouse_pos). 
+            #Za svaki kvadrat se proverava da li je pozicija miša 
+            #unutar tog kvadrata pomoću funkcije collidepoint(mouse_pos). 
             #Ako jeste, to znači da je meta pogodjena.
             if targets[i][j].collidepoint(mouse_pos):
                 #Kada se meta pogodi, koordinata te mete se uklanja iz liste coords, 
@@ -376,7 +377,7 @@ def draw_menu():
     timed_button = pygame.rect.Rect((170, 661), (260, 100))
     screen.blit(score_font.render(f'{best_timed}', True, 'white'), (340, 713))
     reset_button = pygame.rect.Rect((475, 661), (260, 100))
-    #Zatim se vrši provera da li je miš unutar pravougaonika određenih dugmića 
+    #Zatim se vrši provera da li je miš unutar kvadrata određenih dugmića 
     #i da li je korisnik kliknuo levim tasterom miša. Ako je to slučaj i 
     # ako klik još nije registrovan (da bi se izbegla višestruka obrada klika), 
     # vrši se odgovarajuće ažuriranje promenljivih mode, level, menu, time_passed, 
@@ -453,7 +454,7 @@ def draw_game_over():
     #Koristeći funkciju screen.blit(), ispisuje se vrednost rezultata 
     #(display_score) na odgovarajućoj poziciji na ekranu.
     screen.blit(big_font.render(f'{display_score}', True, 'white'), (640, 560))
-    #Zatim se vrši provera da li je miš unutar pravougaonika određenih dugmića i 
+    #Zatim se vrši provera da li je miš unutar kvadrata određenih dugmića i 
     #da li je korisnik kliknuo levim tasterom miša. Ako je to slučaj i ako klik 
     #još nije registrovan (da bi se izbegla višestruka obrada klika), vrši se 
     #odgovarajuće ažuriranje promenljivih clicked, level, pause, game_over, menu, 
@@ -499,7 +500,7 @@ def draw_pause():
     #igre (resume_button) i povratak na glavni meni (menu_button) pomoću funkcije pygame.rect.Rect().
     resume_button = pygame.rect.Rect((170, 661), (260, 100))
     menu_button = pygame.rect.Rect((475, 661), (260, 100))
-    #Zatim se vrši provera da li je miš unutar pravougaonika određenih dugmića 
+    #Zatim se vrši provera da li je miš unutar kvadrata određenih dugmića 
     #i da li je korisnik kliknuo levim tasterom miša. Ako je to slučaj i 
     #ako klik još nije registrovan (da bi se izbegla višestruka obrada klika), 
     #vrši se odgovarajuće ažuriranje promenljivih level, pause, clicked i menu.
@@ -560,7 +561,7 @@ while run:
     #pa se one inicijalizuju na osnovu vrednosti u promenljivim targets i 
     #smeštaju u promenljive one_coords, two_coords i three_coords.
     if new_coords:
-        # initialize enemy coordinates
+        # inicijalizacija koordinata neprijatelja
         one_coords = [[], [], []]
         two_coords = [[], [], []]
         three_coords = [[], [], [], []]

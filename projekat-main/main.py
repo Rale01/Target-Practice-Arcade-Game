@@ -719,7 +719,7 @@ pygame.quit()
 #Mi smo na kraju preko pip Python biblioteke napravili .exe(EXECUTABLE FILE) kako bi
 #igrica mogla lakse da se pokrece i omoguci bolje korisnicko iskustvo!
 #Prvo smo kreirali ikonicu za nasu igricu i konvertovali je u .ico format i podesili joj veoma male dimenzije
-#i smestili je u assets icon folder-u!
+#i smestili je u desktop-icon folder-u pod nazivom "desktop-icon.ico"!
 
 #To smo odradili tako sto smo u terminalu koji se odnosi na file path do foldera gde se nalazi 
 # nasa igrica kucali sledeci kod: pyinstaller -w -F -i "fajl path do ikonice" main.py
